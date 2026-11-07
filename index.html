@@ -149,8 +149,8 @@ function fig(k,c){
 }
 
 // ===== Supabase সেটিং: নিজের URL ও anon key বসাও (খালি থাকলে নমুনা তথ্য চলবে) =====
-const SB_URL='';   // যেমন: https://abcdxyz.supabase.co
-const SB_KEY='';   // Project Settings → API → anon public key
+const SB_URL='https://skrnrqzhivrjemmgjbmc.supabase.co';   // যেমন: https://abcdxyz.supabase.co
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrcm5ycXpoaXZyamVtbWdqYm1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNDQzMDQsImV4cCI6MjEwOTYyMDMwNH0.4vfutq0S4CNdOz41Gr1ROU61_P3QMU1Ixa0AqVOhu2I';   // Project Settings → API → anon public key
 let live=false,divAvg={},high=0;
 let cur=null,hist=[],avg=36.4;
 try{hist=JSON.parse(localStorage.getItem('mt_hist')||'[]')}catch(e){}
