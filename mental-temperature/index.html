@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>এই মুহূর্তের তাপমাত্রা</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#e3f3f9;--bg2:#b6d9ec;--ac:#3b7aa3;--ink:#23323b;--mute:#5d6e78;--panel:rgba(255,255,255,.62);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#23323b;--mute:#4f606a}}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));background-attachment:fixed;transition:background 1s}
+.wrap{max-width:460px;margin:0 auto;padding:22px 18px 40px}
+h1{font-size:20px;text-align:center;margin:6px 0 2px;font-weight:600}
+.sub{text-align:center;color:var(--mute);font-size:14px;margin:0 0 18px}
+.panel{background:var(--panel);backdrop-filter:blur(8px);border-radius:24px;padding:20px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+.big{font-size:76px;font-weight:700;text-align:center;line-height:1.1;color:var(--ac);transition:color .6s}
+.zone{text-align:center;color:var(--mute);font-size:15px;min-height:22px}
+input[type=range]{width:100%;height:44px;-webkit-appearance:none;appearance:none;background:transparent;margin:10px 0 4px}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:8px;background:linear-gradient(90deg,#8fc4e0,#9ed3b4,#ecd88a,#f2a96b,#e57c63,#b5557a)}
+input[type=range]::-moz-range-track{height:12px;border-radius:8px;background:linear-gradient(90deg,#8fc4e0,#9ed3b4,#ecd88a,#f2a96b,#e57c63,#b5557a)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;border-radius:50%;background:#fff;border:4px solid var(--ac);margin-top:-12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:4px solid var(--ac)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--mute);font-size:13px}
+.num{width:84px;font:inherit;font-size:18px;text-align:center;padding:8px;border-radius:12px;border:1.5px solid rgba(0,0,0,.12);background:#fff;color:var(--ink)}
+.btn{display:block;width:100%;font:inherit;font-size:20px;font-weight:600;color:#fff;background:var(--ac);border:0;border-radius:18px;padding:16px;margin-top:16px;cursor:pointer;transition:transform .15s,background .6s;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.btn:active{transform:scale(.97)}
+.btn.sec{background:#fff;color:var(--ac);box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:16px;padding:13px;margin-top:0}
+.pair{display:flex;gap:10px;margin-top:14px}
+#res{display:none;margin-top:22px}
+#res.show{display:block;animation:fade .8s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card{aspect-ratio:4/5;border-radius:28px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.14);overflow:hidden}
+.card .nm{font-size:13px;opacity:.7}
+.card .t{font-size:58px;font-weight:700;line-height:1.1}
+.card svg{flex:1;min-height:0;width:80%;margin:2px 0}
+.card .adj{font-size:30px;font-weight:700;line-height:1.2}
+.card .sen{font-size:17px;margin:6px 6px 0;line-height:1.45}
+.card .ft{font-size:12px;opacity:.65;margin-top:auto;padding-top:8px}
+.help{margin-top:12px;font-size:14px;text-align:center;color:var(--ink);background:rgba(255,255,255,.7);border-radius:14px;padding:10px}
+h2{font-size:16px;margin:0 0 8px}
+.sec-gap{margin-top:16px}
+.avg{font-size:30px;font-weight:700;color:var(--ac)}
+.hist{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#fff;border-radius:999px;padding:6px 12px;font-size:14px}
+.rrow{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(0,0,0,.07)}
+.rrow:last-child{border-bottom:0}
+.rdot{width:12px;height:12px;border-radius:50%;flex:none}
+.rname{flex:1;min-width:0;font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rtime{font-size:12px;color:var(--mute);flex:none}
+.rtemp{font-size:18px;font-weight:700;flex:none;min-width:48px;text-align:right}
+.priv{font-size:12px;color:var(--mute);margin:0 2px 8px}
+.foot{text-align:center;color:var(--mute);font-size:13px;margin-top:20px;line-height:1.8}
+.foot a{color:var(--ac);font-weight:600;text-decoration:none;border-bottom:1.5px solid currentColor}
+.who{font-size:22px;font-weight:600;max-width:100%;line-height:1.3;margin-top:2px;word-break:break-word}
+.cm{margin-top:8px;font-size:13.5px;line-height:1.5;background:rgba(255,255,255,.6);border-radius:12px;padding:8px 10px}.cm:empty{display:none}
+.lone{margin-top:12px;font-size:15px;text-align:center;line-height:1.6;background:rgba(255,255,255,.8);border-radius:16px;padding:14px;border:1.5px dashed var(--ac)}
+#nm{width:100%;font-size:18px;margin-bottom:6px;text-align:left;padding:12px 14px}
+#nm.err{border-color:#d9534f;animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>এই মুহূর্তের তাপমাত্রা</h1>
+  <p class="sub">মনটা এখন কত ডিগ্রিতে আছে? ধীরে ঠিক করো।</p>
+
+  <div class="panel">
+    <input class="num" id="nm" maxlength="30" placeholder="তোমার নাম লেখো" autocomplete="name" aria-label="নাম">
+    <div class="priv">নাম ও তাপমাত্রা নিচের সাম্প্রতিক তালিকায় সবাই দেখতে পাবে।</div>
+    <div class="big" id="big">২৮°</div>
+    <div class="zone" id="zone"></div>
+    <input type="range" id="rng" min="15" max="55" value="28" aria-label="তাপমাত্রা">
+    <div class="row"><span>১৫° ঠান্ডা</span><input class="num" id="num" type="number" min="15" max="55" value="28" inputmode="numeric" aria-label="সংখ্যা"><span>৫৫° গরম</span></div>
+    <button class="btn" id="go">দেখাও</button>
+  </div>
+
+  <div id="res">
+    <div class="card" id="card"></div>
+    <div class="help" id="help" style="display:none">যদি খুব ভারী লাগে, কাউকে আপন মানুষকে বলো। তুমি একা নও 🤍</div>
+    <div class="pair"><button class="btn sec" id="dl">কার্ড ডাউনলোড করো</button><button class="btn sec" id="sh">শেয়ার করো</button></div>
+    <button class="btn sec" id="again" style="margin-top:10px;background:transparent;box-shadow:none">আবার দেখাও (নতুন কথা)</button>
+  </div>
+
+  <div class="panel sec-gap">
+    <h2>এই মুহূর্তে সারা দেশের গড় তাপমাত্রা</h2>
+    <div class="avg" id="avg"></div>
+    <div id="insight" style="color:var(--mute);font-size:14px;margin-top:4px"></div>
+    <svg id="map" viewBox="0 0 200 250" style="width:100%;max-height:260px;margin-top:10px" role="img" aria-label="বাংলাদেশের মানচিত্র"></svg>
+    <div id="note" style="font-size:12px;color:var(--mute);text-align:center">* নমুনা তথ্য, বাস্তব নয়</div>
+  </div>
+
+  <div class="panel sec-gap">
+    <h2>সাম্প্রতিক ১০ জনের মনের তাপমাত্রা</h2>
+    <div id="recent"></div>
+    <div id="rnote" style="font-size:12px;color:var(--mute);text-align:center;margin-top:8px"></div>
+  </div>
+
+  <div class="panel sec-gap" id="histP" style="display:none"><h2>তোমার সাম্প্রতিক তাপমাত্রা</h2><div class="hist" id="hist"></div></div>
+  <div class="foot">একজন শান্ত বন্ধুর মতো, বিচার না করে পাশে আছি।<br>Made by <a href="https://www.facebook.com/uttom.sutradhar.773" target="_blank" rel="noopener">Uttom Sutradhar Goutam</a></div>
+</div>
+
+<script>
+const bn=n=>String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
+const R=[
+{z:'খুব শান্ত / নিস্তব্ধ',lo:20,hi:25,a:['#e3f3f9','#b6d9ec'],c:'#3b7aa3',
+ adj:['শূন্য','নিথর','হালকা','নিস্তেজ','নরম','নিঃশব্দ','শান্তিপূর্ণ','ফাঁকা','আরামদায়ক','নিষ্ক্রিয়'],
+ s:['আজ সবকিছু দূরে মনে হচ্ছে','মনটা যেন থেমে আছে','কিছুই ভারী লাগছে না আজ','আজ মনটা তুলার মতো নরম','ভেতরে একদম চুপচাপ','এই মুহূর্তে কেবল শুয়ে থাকতে ইচ্ছে করছে']},
+{z:'স্থির / সাধারণ',lo:26,hi:32,a:['#e6f3ea','#c6e2d2'],c:'#4a8767',
+ adj:['স্থির','সাধারণ','ধীর','ভারসাম্য','শান্ত','মাঝারি','স্বাভাবিক','চলমান','নির্বিকার'],
+ s:['আজ মনটা সমান তালে চলছে','কিছুই বিশেষ ঘটছে না','সবকিছু আস্তে আস্তে এগোচ্ছে','না খুব ভালো, না খারাপ — মাঝামাঝি','আজ স্বাভাবিক দিন চলছে']},
+{z:'হালকা চাপ / চিন্তা',lo:33,hi:37,a:['#f7f1dc','#ebdfb0'],c:'#9a8335',
+ adj:['চিন্তিত','একটু ভারী','অস্থির','দ্বিধাগ্রস্ত','ক্লান্ত','হালকা চাপ','মাথাব্যথা','সামান্য বিরক্ত'],
+ s:['মাথায় অনেক কিছু ঘুরছে','মনটা হালকা লাগছে না','আজ আর কিছু চাই না','একটু অস্থির লাগছে, কিন্তু এখনো নিয়ন্ত্রণে','চাপ আছে, কিন্তু এখনো সহ্যের মধ্যে']},
+{z:'অস্থির / বিরক্ত',lo:38,hi:42,a:['#fbe6d2','#f3c79f'],c:'#b86a2c',
+ adj:['অস্থির','বিরক্ত','চাপা রাগ','উদ্বিগ্ন','অস্বস্তিকর','রাগান্বিত','ঝগড়াটে','চাপা চাপ'],
+ s:['মনটা জায়গায় থাকছে না','সবকিছু বিরক্তিকর লাগছে','রাগটা বুকে চেপে আছে','এখন কেউ কিছু বললেই খেপে যাবো','ভিতরে চাপ জমছে, কিন্তু বেরোচ্ছে না']},
+{z:'প্রচণ্ড চাপ',lo:43,hi:48,a:['#f8d9d0','#eeaf9f'],c:'#b0452d',
+ adj:['ভারী','দমবন্ধ','অসহ্য','ভেঙে পড়া','তীব্র','চরম চাপ','শ্বাসরুদ্ধ','মানসিক ক্লান্তি'],
+ s:['শ্বাস নিতে কষ্ট হচ্ছে','আর সহ্য হচ্ছে না কিছু','মনটা ভেঙে যেতে বসেছে','সবকিছু যেন বুকের ওপর চেপে বসেছে','মনটা পুরোপুরি ক্লান্ত']},
+{z:'চরম',lo:49,hi:99,a:['#eed4dd','#d3a6b9'],c:'#8b3b5c',
+ adj:['বিধ্বস্ত','অসহনীয়','শূন্যপ্রায়','জমে যাওয়া','হারিয়ে যাওয়া','চরম ক্লান্তি','মানসিক ধ্বংস','আর পারছি না'],
+ s:['আজ আর টিকে থাকা কঠিন','সবকিছু বড় বেশি হয়ে গেছে','ভেতরে কিছুই অবশিষ্ট নেই','নিজেকে হারিয়ে ফেলেছি মনে হচ্ছে','সত্যিই আর পারছি না']}
+];
+const FUN=['আজ মনটা এমন অবস্থায় আছে যে ওয়াইফাই-ও কানেক্ট হচ্ছে না','তাপমাত্রা দেখে মনে হচ্ছে এখনই এসি লাগানো দরকার','মনটা এখন এমন যে চা খেলেও গরম লাগবে'];
+const MOT=['চাপ আছে, কিন্তু তুমি এখনো এখানে আছো — সেটাই বড় কথা','এই অনুভূতি স্থায়ী নয়। তুমি এর চেয়ে শক্তিশালী','মনটা ভারী, কিন্তু তুমি এখনো শ্বাস নিচ্ছো — এগোও'];
+const idx=t=>t<=25?0:t<=32?1:t<=37?2:t<=42?3:t<=48?4:5;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+function head(x,y,k){
+  const f={0:'<path d="M-11 0q4 4 8 0M3 0q4 4 8 0M-6 11q6 5 12 0"/>',
+  1:'<circle cx="-7" cy="0" r="2" fill="currentColor"/><circle cx="7" cy="0" r="2" fill="currentColor"/><path d="M-6 12h12"/>',
+  2:'<circle cx="-7" cy="0" r="2" fill="currentColor"/><circle cx="7" cy="0" r="2" fill="currentColor"/><path d="M-5 13q5-2 10 0"/>',
+  3:'<circle cx="-7" cy="1" r="2" fill="currentColor"/><circle cx="7" cy="1" r="2" fill="currentColor"/><path d="M-12-7l9 4M12-7l-9 4M-6 12h12"/>',
+  4:'<path d="M-11 2q4 4 8 0M3 2q4 4 8 0M-6 15q6-5 12 0"/>',5:''}[k];
+  return `<g transform="translate(${x} ${y})"><circle r="23" fill="#fff8ee"/>${f}</g>`;
+}
+function fig(k,c){
+  const b=[
+  `<path d="M100 98V150M100 108L74 150M100 108L126 150M100 150Q58 184 48 170M100 150Q142 184 152 170"/><path d="M40 190Q100 200 160 190" opacity=".35"/>${head(100,72,0)}`,
+  `<path d="M100 98V152M100 108L80 155M100 108L120 155M100 152L86 208M100 152L114 208"/>${head(100,72,1)}`,
+  `<path d="M100 98V152M100 108L80 155M100 108L128 112L112 76M100 152L86 208M100 152L114 208"/>${head(100,72,2)}`,
+  `<path d="M100 98V152M100 110L78 128L122 128M100 110L122 128L78 128M100 152L78 208M100 152L122 208"/>${head(100,72,3)}`,
+  `<path d="M104 104Q96 130 100 152M104 112L82 156M104 112L128 152M100 152L88 208M100 152L116 208"/>${head(110,88,4)}`,
+  `<path d="M128 118Q146 150 140 192M140 192L96 156L66 194M128 128L102 150" /><path d="M40 196H170" opacity=".35"/>${head(100,126,5)}`
+  ][k];
+  return `<svg viewBox="0 0 200 220" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" style="color:${c}">${b}</svg>`;
+}
+
+// ===== Supabase সেটিং: নিজের URL ও anon key বসাও (খালি থাকলে নমুনা তথ্য চলবে) =====
+const SB_URL='https://skrnrqzhivrjemmgjbmc.supabase.co
+';   // যেমন: https://abcdxyz.supabase.co
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrcm5ycXpoaXZyamVtbWdqYm1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNDQzMDQsImV4cCI6MjEwOTYyMDMwNH0.4vfutq0S4CNdOz41Gr1ROU61_P3QMU1Ixa0AqVOhu2I';   // Project Settings → API → anon public key
+let live=false,divAvg={},high=0;
+let cur=null,hist=[],avg=36.4;
+try{hist=JSON.parse(localStorage.getItem('mt_hist')||'[]')}catch(e){}
+const $=id=>document.getElementById(id);
+function theme(t){const r=R[idx(t)];const s=document.documentElement.style;s.setProperty('--bg1',r.a[0]);s.setProperty('--bg2',r.a[1]);s.setProperty('--ac',r.c);}
+function sync(v){v=Math.max(15,Math.min(55,Math.round(+v)||28));$('rng').value=v;$('num').value=v;$('big').textContent=bn(v)+'°';$('zone').textContent=R[idx(v)].z;theme(v);return v;}
+$('rng').oninput=e=>sync(e.target.value);
+$('num').onchange=e=>sync(e.target.value);
+
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MSG=[
+['{n}, আজকের এই নিস্তব্ধতাটুকু উপভোগ করো। কিছু না করাও মাঝে মাঝে দরকার।','শান্ত থাকা মানেই ফুরিয়ে যাওয়া নয়। মনটা শুধু একটু বিশ্রাম নিচ্ছে।','আজ একটু ধীরে চলো। এক কাপ চা আর খানিক চুপচাপ সময়, এটাই যথেষ্ট।','{n}, এমন নরম দিনও দরকার। নিজের সাথে একটু সময় কাটাও।'],
+['{n}, মাঝামাঝি দিনও দারুণ দিন। সবদিন তো আর উৎসব হয় না!','স্থির থাকাটাও এক ধরনের শক্তি। আজ যেভাবে আছো, সেভাবেই ঠিক আছো।','সাধারণ দিনেই ছোট ছোট ভালো জিনিস লুকিয়ে থাকে। আজ একটা খুঁজে দেখো।','আজ সবকিছু ঠিকঠাক চলছে। একটু পানি খাও, নিজের প্রতি একটু যত্ন নাও।'],
+['{n}, চাপ আছে বুঝতে পারছি। একটা লম্বা শ্বাস নাও, তারপর একটা একটা করে এগোও।','মাথায় যা ঘুরছে, কাগজে লিখে ফেলো। ভার অনেকটা কমে যাবে।','একটু ক্লান্ত লাগাই স্বাভাবিক। ১০ মিনিট ফোন রেখে হেঁটে আসো।','সবকিছু আজই সমাধান করতে হবে না। যেটুকু পারো, সেটুকুই যথেষ্ট।'],
+['{n}, রাগ বা বিরক্তি লাগলে সেটাও ঠিক আছে। একটু পানি খাও, কয়েকবার গভীর শ্বাস নাও।','অস্থির লাগছে? জানালার কাছে গিয়ে ৫টা জিনিস গুনে দেখো, মনটা একটু থিতু হবে।','এই মুহূর্তে কিছু না বলে একটু চুপ থাকো। ভেতরের ঝড় আস্তে আস্তে থামবে।','বিরক্তিটা সত্যি, কিন্তু এটা চিরদিনের নয়। একটু বিরতি নাও।'],
+['{n}, আজ অনেক ভার বইছো। একটু থামো, নিজেকে একটু ছুটি দাও।','শ্বাস নাও, ৪ গুনতে নাও, ৪ গুনতে ছাড়ো। এভাবে কয়েকবার। তুমি পারছো।','এত চাপের পরও তুমি এখানে আছো, এটাই তোমার শক্তির প্রমাণ।','ভারী দিনে কাছের কাউকে একটা মেসেজ দাও। কথা বললে হালকা লাগে।'],
+['{n}, আজ খুব কঠিন দিন যাচ্ছে বুঝতে পারছি। একা না থেকে কাউকে কাছে ডাকো।','এই অনুভূতিটা চিরস্থায়ী নয়। আজ শুধু এই মুহূর্তটা পার করলেই হবে।','কারো সাথে কথা বলো, বন্ধু, পরিবার বা কাছের কেউ। তোমার কথা শোনার মানুষ আছে।','নিজের প্রতি নরম হও। এত ক্লান্ত লাগলে বিশ্রাম নেওয়াটাই সবচেয়ে সাহসী কাজ।']
+];
+function msgText(){
+  if(!cur)return '';
+  if(cur.useCount&&cur.t>=38){
+    const n=live?high:dist[3]+dist[4]+dist[5];
+    return n>1?`দেখো ${cur.name}, তুমি একা না! আজ ${bn(n)} জন মানুষের মনের তাপমাত্রা ৩৮° বা তার বেশি। আজ অনেকেরই মন খারাপ।`
+              :`দেখো ${cur.name}, তুমি একা না! আজ অনেকেরই মন খারাপ থাকে, তোমার মতো আরও অনেকে এমন অনুভব করে।`;
+  }
+  return MSG[cur.i][cur.mi].replace('{n}',cur.name);
+}
+function lone(){const el=$('cm');if(el)el.textContent=msgText();}
+function make(t){
+  const i=idx(t),r=R[i];let sen,tries=0;
+  do{
+    const x=Math.random();
+    if(i===5)sen=x<.3?pick(MOT):pick(r.s);
+    else sen=x<.65?pick(r.s):x<.82?pick(MOT):pick(FUN);
+    tries++;
+  }while(cur&&sen===cur.sen&&tries<6);
+  return{t,i,adj:pick(r.adj),sen,useCount:t>=38&&Math.random()<.5,mi:Math.floor(Math.random()*MSG[i].length)};
+}
+function render(){
+  const r=R[cur.i];
+  const c=$('card');
+  c.style.background=`linear-gradient(170deg,${r.a[0]},${r.a[1]})`;c.style.color='#2a3640';
+  c.innerHTML=`<div class="nm">এই মুহূর্তের তাপমাত্রা</div><div class="who">${esc(cur.name)}-এর মনের তাপমাত্রা</div><div class="t" style="color:${r.c}">${bn(cur.t)}°</div>${fig(cur.i,r.c)}<div class="adj">${cur.adj}</div><div class="sen">${cur.sen}</div><div class="cm" id="cm"></div><div class="ft">তোমারটা কত? · এই মুহূর্তের তাপমাত্রা</div>`;
+  $('help').style.display=cur.i>=4?'block':'none';lone();
+  const el=$('res');el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+}
+function go(fresh){
+  let name=fresh?cur.name:$('nm').value.trim();
+  if(!name){const n=$('nm');n.classList.add('err');n.placeholder='আগে তোমার নাম লেখো';n.focus();setTimeout(()=>n.classList.remove('err'),600);return}
+  try{localStorage.setItem('mt_name',name)}catch(e){}
+  const t=fresh?cur.t:sync($('num').value);
+  cur=make(t);cur.name=name;render();
+  if(!fresh){
+    hist.unshift({t,adj:cur.adj,name:cur.name});hist=hist.slice(0,8);
+    try{localStorage.setItem('mt_hist',JSON.stringify(hist))}catch(e){}
+    if(!live)avg=Math.max(20,Math.min(50,avg+(t-avg)*.02+(Math.random()-.5)*.2));
+    if(!live)bump(t);
+    stats();showHist();save(t,cur.name);
+    if(!SB_URL){mockRecent.unshift({name:cur.name,temp:t,created_at:new Date().toISOString()});renderRecent(mockRecent.slice(0,10))}
+  }
+  setTimeout(()=>$('res').scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+$('go').onclick=()=>go(false);
+$('again').onclick=()=>go(true);
+
+const ago=iso=>{const m=Math.floor((Date.now()-new Date(iso))/60000);return m<1?'এইমাত্র':m<60?bn(m)+' মিনিট আগে':m<1440?bn(Math.floor(m/60))+' ঘণ্টা আগে':bn(Math.floor(m/1440))+' দিন আগে'};
+const mk=m=>new Date(Date.now()-m*60000).toISOString();
+let mockRecent=[{name:'তানভীর',temp:41,created_at:mk(3)},{name:'মিম',temp:27,created_at:mk(9)},{name:'রাফি',temp:36,created_at:mk(17)},{name:'নুসরাত',temp:44,created_at:mk(26)},{name:'সাকিব',temp:30,created_at:mk(41)},{name:'ঋতু',temp:23,created_at:mk(58)},{name:'আরিফ',temp:39,created_at:mk(75)}];
+function renderRecent(list){
+  $('recent').innerHTML=list.length?list.map(r=>`<div class="rrow"><span class="rdot" style="background:${col(r.temp)}"></span><span class="rname">${esc(r.name)}</span><span class="rtime">${ago(r.created_at)}</span><span class="rtemp" style="color:${col(r.temp)}">${bn(r.temp)}°</span></div>`).join(''):'<div style="text-align:center;color:var(--mute);font-size:14px">এখনো কেউ জমা দেয়নি। তুমিই প্রথম হও!</div>';
+  $('rnote').textContent=SB_URL&&live?'':'* নমুনা তালিকা, ডেটাবেস চালু হলে আসল নাম দেখাবে';
+}
+async function loadRecent(){
+  if(!SB_URL){renderRecent(mockRecent);return}
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/get_recent',{method:'POST',headers:H(),body:'{}'});
+    const d=await r.json();
+    if(Array.isArray(d)){live=live||d.length>0;renderRecent(d)}else renderRecent(mockRecent);
+  }catch(e){renderRecent(mockRecent)}
+}
+const H=()=>({apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'});
+async function save(t,name){
+  if(!SB_URL)return;
+  try{
+    await fetch(SB_URL+'/rest/v1/submissions',{method:'POST',headers:{...H(),Prefer:'return=minimal'},body:JSON.stringify({temp:t,name:name.slice(0,30)})});
+    await loadStats();await loadRecent();
+  }catch(e){}
+}
+async function loadStats(){
+  if(!SB_URL)return;
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/get_stats',{method:'POST',headers:H(),body:'{}'});
+    const d=await r.json();
+    if(d&&d.total>0){live=true;avg=+d.avg;dist=d.hour;divAvg=d.divisions||{};high=+d.high||0;$('note').textContent='* গড় ও সংখ্যা গত ২৪ ঘণ্টার বাস্তব তথ্য (মোট '+bn(d.total)+' জন), মানচিত্র নমুনা';stats();map();lone();}
+  }catch(e){}
+}
+let dist=[5,24,30,22,13,6];
+function bump(t){dist[idx(t)]+=1}
+function stats(){
+  $('avg').textContent=bn(avg.toFixed(1))+'°';
+  const m=dist.indexOf(Math.max(...dist)),r=R[m];
+  const lo=m===0?20:r.lo,hi=m===5?'৪৯+':bn(r.hi);
+  $('insight').textContent=`গত ঘণ্টায় সবচেয়ে বেশি মানুষ ${bn(lo)}°-${hi}° রেঞ্জে আছে`;
+}
+function showHist(){
+  $('histP').style.display=hist.length?'block':'none';
+  $('hist').innerHTML=hist.map(h=>`<span class="chip">${bn(h.t)}° · ${h.adj}</span>`).join('');
+}
+const col=t=>R[idx(t)].c;
+function map(){
+  const pts=[[118,70,'রংপুর'],[100,110,'রাজশাহী'],[135,125,'ময়মনসিংহ'],[148,150,'ঢাকা'],[75,160,'খুলনা'],[115,185,'বরিশাল'],[170,125,'সিলেট'],[172,185,'চট্টগ্রাম']];
+  let h='<path d="M105 30L135 45L160 75L175 100L185 130L175 160L185 200L170 235L150 215L135 195L115 215L80 205L60 175L62 140L80 110L90 70Z" fill="rgba(255,255,255,.55)" stroke="rgba(0,0,0,.15)" stroke-width="2"/>';
+  pts.forEach(p=>{const t=Math.round(avg+(Math.random()-.5)*14);h+=`<circle cx="${p[0]}" cy="${p[1]}" r="15" fill="${col(t)}" opacity=".75"><animate attributeName="r" values="14;17;14" dur="${3+Math.random()*2}s" repeatCount="indefinite"/></circle><text x="${p[0]}" y="${p[1]+4}" font-size="9" text-anchor="middle" fill="#fff" font-weight="600">${bn(t)}°</text>`});
+  $('map').innerHTML=h;
+}
+
+// Card export (canvas, 1080x1350)
+function wrap(ctx,text,x,y,mw,lh){
+  const w=text.split(' ');let l='';
+  for(const s of w){const tl=l?l+' '+s:s;if(ctx.measureText(tl).width>mw&&l){ctx.fillText(l,x,y);l=s;y+=lh}else l=tl}
+  ctx.fillText(l,x,y);
+}
+async function makePng(){
+  const r=R[cur.i],W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  try{await document.fonts.load('700 40px "Hind Siliguri"');await document.fonts.load('400 40px "Hind Siliguri"')}catch(e){}
+  const g=x.createLinearGradient(0,0,W*.3,H);g.addColorStop(0,r.a[0]);g.addColorStop(1,r.a[1]);
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.textAlign='center';const F='"Hind Siliguri","Noto Sans Bengali",sans-serif';
+  x.fillStyle='rgba(42,54,64,.7)';x.font='400 34px '+F;x.fillText('এই মুহূর্তের তাপমাত্রা',W/2,90);
+  x.fillStyle='#2a3640';x.font='600 50px '+F;x.fillText(cur.name+'-এর মনের তাপমাত্রা',W/2,170,940);
+  x.fillStyle=r.c;x.font='700 170px '+F;x.fillText(bn(cur.t)+'°',W/2,330);
+  const svg=fig(cur.i,r.c).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="600" height="660" ');
+  const img=new Image();
+  await new Promise(res=>{img.onload=res;img.onerror=res;img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});
+  const msg=msgText();if(msg)x.drawImage(img,300,355,480,528);else x.drawImage(img,255,360,570,627);
+  x.fillStyle='#2a3640';x.font='700 84px '+F;x.fillText(cur.adj,W/2,msg?970:1075);
+  x.font='400 46px '+F;wrap(x,cur.sen,W/2,msg?1040:1150,880,msg?58:64);
+  if(msg){x.fillStyle=r.c;x.font='500 30px '+F;wrap(x,msg,W/2,1205,920,40)}
+  x.fillStyle='rgba(42,54,64,.6)';x.font='400 30px '+F;x.font='500 30px '+F;x.fillText('তোমারটা কত? · এই মুহূর্তের তাপমাত্রা',W/2,1325);
+  return new Promise(res=>c.toBlob(res,'image/png'));
+}
+$('dl').onclick=async()=>{
+  const b=await makePng(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='temperature-card.png';a.click();
+};
+$('sh').onclick=async()=>{
+  const b=await makePng(),f=new File([b],'temperature-card.png',{type:'image/png'});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'এই মুহূর্তের তাপমাত্রা',text:'তোমারটা কত?'});
+    else $('dl').click();
+  }catch(e){}
+};
+
+try{$('nm').value=localStorage.getItem('mt_name')||''}catch(e){}
+sync(28);stats();map();showHist();loadStats();loadRecent();
+</script>
+</body>
+</html>
